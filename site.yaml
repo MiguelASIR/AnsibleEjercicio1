@@ -1,0 +1,62 @@
+- hosts: servidores
+  become: true
+  tasks:
+      # No sirve para nada, realizamos un ping
+    - name: "Comprobamos si tiene conectividad"
+      ping:
+      # Actualizamos los paquetes apt update;apt upgrade
+    - name: "Actualizamos el sistema"
+      apt:  update_cache=yes upgrade=yes
+      # instalar un paquete
+    - name: "Instalar paquete git, zip y MySQL"
+      apt:
+        pkg:
+          - git
+          - zip
+          - mariadb-server
+          - python3-mysqldb
+      # Copia un fichero a la máquina remoto
+    - name: "Copiar fichero al servidor remoto"
+      copy:
+        src: files/foo.conf
+        dest: /etc/foo.conf
+        owner: root
+        group: root
+        mode: '0644'
+      #Crear un usuario
+    - name: "Crear un usuario"
+      user: 
+        name: "Miguel" 
+        password: $6$WQGaWDnJfvZYRdVJ$TaDLxI7iT89/tdkFnSFocBQ1fOtrRxYDgKFXjyaA5EOSTBcver3aHiEDOgLnAGdT5bDGPlT2hQ9iaW20V.fZ0/
+        shell: "/bin/bash"
+      # Descargar fichero desde URL
+    - name: "Descargar fichero"
+      get_url:
+        url: https://wordpress.org/latest.zip
+        dest: /home/debian
+      # Descomprimir archivo zip
+    - name: "Descomprimir zip"
+      unarchive:
+        src: wordpress-5.8.1.zip
+        dest: /home/debian
+        remote_src: yes
+      #Clonar repositorio git
+    - name: "Clonar repositorio git"
+      git:
+        repo: https://github.com/josedom24/ansible_ejemplos.git
+        dest: /home/Miguel/ansible_ejemplos
+        version: master
+        accept_hostkey: yes
+        key_file: home/Miguel/.ssh/id_rsa
+      #Habilitar e iniciar MySQL
+    - name: "Iniciar MySQL"
+      action: service name=mariadb enable=yes state=started
+      #Crea un usuario administrador de la base de datos
+    - name: "Usuario para MySQL"
+      mysql_user: name=Miguel password=debian priv=*.*:ALL state=present
+      #Crear la base de datos
+    - name: "Creacion de la base de datos"
+      mysql_db: name=Miguel_wordpress state=present
+    
+    
+
