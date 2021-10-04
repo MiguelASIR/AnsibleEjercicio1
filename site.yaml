@@ -44,19 +44,15 @@
     - name: "Clonar repositorio git"
       git:
         repo: https://github.com/josedom24/ansible_ejemplos.git
-        dest: /home/Miguel/ansible_ejemplos
-        version: master
-        accept_hostkey: yes
-        key_file: home/Miguel/.ssh/id_rsa
-      #Habilitar e iniciar MySQL
-    - name: "Iniciar MySQL"
-      action: service name=mariadb enable=yes state=started
-      #Crea un usuario administrador de la base de datos
-    - name: "Usuario para MySQL"
-      mysql_user: name=Miguel password=debian priv=*.*:ALL state=present
+        dest: /home/debian/repositoriojosedom
+        version: main    
       #Crear la base de datos
     - name: "Creacion de la base de datos"
       mysql_db: name=Miguel_wordpress state=present
+      #Crea un usuario administrador de la base de datos
+    - name: "Usuario para MySQL"
+      mysql_user: name=Miguel password=debian priv=*.*:ALL state=present
+
     
     
 
